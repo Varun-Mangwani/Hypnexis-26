@@ -1,0 +1,14 @@
+{
+  "run_id": "run_demo_001",
+  "confusion_matrix": {
+    "tiny_chunks": {"RETRIEVAL_MISS": 8, "BOTH_FAILED": 2},
+    "top_k_one": {"RETRIEVAL_MISS": 7, "CONTEXT_DISTRACTION": 2, "BOTH_FAILED": 1},
+    "shuffled_retrieval": {"RETRIEVAL_MISS": 6, "HALLUCINATION": 3, "BOTH_FAILED": 1},
+    "guess_prompt": {"HALLUCINATION": 5, "PARAMETRIC_LEAK": 4, "PASS": 1},
+    "gold_removed": {"RETRIEVAL_MISS": 7, "BOTH_FAILED": 3}
+  },
+  "judge_kappa": 0.74,
+  "judge_kappa_interpretation": "Substantial agreement",
+  "hand_labeled_count": 50,
+  "judge_labeled_count": 50
+}

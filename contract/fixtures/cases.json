@@ -1,0 +1,104 @@
+[
+  {
+    "id": "c_001",
+    "question": "What is the capital of France?",
+    "question_type": "factoid",
+    "gold_answer": "Paris",
+    "gold_chunk_ids": ["ch_0a1b2c3d4e5f0001"],
+    "retrieved": [
+      {"chunk_id": "ch_0a1b2c3d4e5f0001", "score": 0.92, "text": "France is a country in Western Europe. Its capital city is Paris, which is also the largest city.", "is_gold": true}
+    ],
+    "answer": "Paris",
+    "claims": [
+      {"text": "The capital of France is Paris.", "supported": true, "evidence_chunk_id": "ch_0a1b2c3d4e5f0001", "span": [0, 30]}
+    ],
+    "scores": {"context_relevance": 0.92, "faithfulness": 1.0, "answer_accuracy": 1.0},
+    "probes": {"gold_context_correct": true, "retrieved_context_correct": true, "no_context_correct": false},
+    "verdict": "PASS",
+    "verdict_detail": "",
+    "explanation": "Retrieved the right context and generated a faithful, accurate answer.",
+    "fix_suggestion": ""
+  },
+  {
+    "id": "c_002",
+    "question": "What is the population of the moon colony?",
+    "question_type": "factoid",
+    "gold_answer": "I cannot answer this from the provided context.",
+    "gold_chunk_ids": ["ch_0a1b2c3d4e5f0002"],
+    "retrieved": [
+      {"chunk_id": "ch_0a1b2c3d4e5f0007", "score": 0.41, "text": "The moon has no permanent human inhabitants.", "is_gold": false}
+    ],
+    "answer": "Approximately 150 scientists live in the lunar base.",
+    "claims": [
+      {"text": "150 scientists live in the lunar base.", "supported": false, "evidence_chunk_id": null, "span": [14, 52]}
+    ],
+    "scores": {"context_relevance": 0.2, "faithfulness": 0.0, "answer_accuracy": 0.0},
+    "probes": {"gold_context_correct": false, "retrieved_context_correct": false, "no_context_correct": false},
+    "verdict": "RETRIEVAL_MISS",
+    "verdict_detail": "ranking",
+    "explanation": "The gold chunk was not retrieved. The answer failed because the retriever did not surface the relevant information.",
+    "fix_suggestion": "Increase top_k or add a reranker to surface the gold chunk."
+  },
+  {
+    "id": "c_003",
+    "question": "What is 15% of 240?",
+    "question_type": "numeric",
+    "gold_answer": "36",
+    "gold_chunk_ids": ["ch_0a1b2c3d4e5f0003"],
+    "retrieved": [
+      {"chunk_id": "ch_0a1b2c3d4e5f0003", "score": 0.88, "text": "A 15% discount on a $240 item saves $36.", "is_gold": true}
+    ],
+    "answer": "36",
+    "claims": [
+      {"text": "15% of 240 is 36.", "supported": true, "evidence_chunk_id": "ch_0a1b2c3d4e5f0003", "span": [0, 17]}
+    ],
+    "scores": {"context_relevance": 0.88, "faithfulness": 1.0, "answer_accuracy": 1.0},
+    "probes": {"gold_context_correct": true, "retrieved_context_correct": true, "no_context_correct": true},
+    "verdict": "PARAMETRIC_LEAK",
+    "verdict_detail": "",
+    "explanation": "Model answered correctly from parametric knowledge without needing the context. Excluded from headline scores.",
+    "fix_suggestion": "Flag this question for exclusion or rephrase to reduce reliance on parametric knowledge."
+  },
+  {
+    "id": "c_042",
+    "question": "What are the two main components of a RAG system?",
+    "question_type": "multi_hop",
+    "gold_answer": "A retriever and a generator.",
+    "gold_chunk_ids": ["ch_11"],
+    "retrieved": [
+      {"chunk_id": "ch_07", "score": 0.81, "text": "Large language models can hallucinate when asked questions outside their training data.", "is_gold": false}
+    ],
+    "answer": "The two main components are the neural network and the knowledge graph.",
+    "claims": [
+      {"text": "RAG has a neural network component.", "supported": false, "evidence_chunk_id": null, "span": [120, 168]},
+      {"text": "RAG has a knowledge graph component.", "supported": false, "evidence_chunk_id": null, "span": [170, 210]}
+    ],
+    "scores": {"context_relevance": 0.4, "faithfulness": 0.5, "answer_accuracy": 0.0},
+    "probes": {"gold_context_correct": true, "retrieved_context_correct": false, "no_context_correct": false},
+    "verdict": "RETRIEVAL_MISS",
+    "verdict_detail": "ranking",
+    "explanation": "The gold chunk was not retrieved. The answer failed because the retriever did not surface the relevant information.",
+    "fix_suggestion": "Increase top_k or add a reranker to surface the gold chunk."
+  },
+  {
+    "id": "c_005",
+    "question": "How does machine learning differ from traditional programming?",
+    "question_type": "paraphrased",
+    "gold_answer": "In traditional programming rules are written by hand; in ML, the system learns rules from data.",
+    "gold_chunk_ids": ["ch_0a1b2c3d4e5f0005"],
+    "retrieved": [
+      {"chunk_id": "ch_0a1b2c3d4e5f0005", "score": 0.87, "text": "Unlike traditional programming where rules are hand-coded, machine learning allows systems to learn patterns from data automatically.", "is_gold": true}
+    ],
+    "answer": "Traditional programming relies on explicit rules, while ML infers rules from examples.",
+    "claims": [
+      {"text": "Traditional programming uses explicit rules.", "supported": true, "evidence_chunk_id": "ch_0a1b2c3d4e5f0005", "span": [0, 42]},
+      {"text": "ML infers rules from examples.", "supported": true, "evidence_chunk_id": "ch_0a1b2c3d4e5f0005", "span": [49, 79]}
+    ],
+    "scores": {"context_relevance": 0.87, "faithfulness": 1.0, "answer_accuracy": 1.0},
+    "probes": {"gold_context_correct": true, "retrieved_context_correct": true, "no_context_correct": false},
+    "verdict": "PASS",
+    "verdict_detail": "",
+    "explanation": "Retrieved the right context and generated a faithful, accurate answer.",
+    "fix_suggestion": ""
+  }
+]

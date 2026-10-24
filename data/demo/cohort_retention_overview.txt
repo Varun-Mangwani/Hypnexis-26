@@ -1,0 +1,14 @@
+Cohort Retention & Customer Economics Overview
+
+Cohort Metrics Analysis:
+Overall gross revenue retention across all mid-market cohorts averaged 91.2%. Customers under 100 seats experienced 88% retention, while upper mid-market accounts (100 to 500 seats) demonstrated 93.5% retention.
+For strategic enterprise accounts exceeding 500 seats, gross revenue retention reached 96.8% with net dollar expansion of 124%.
+
+Acquisition & Unit Economics:
+Customer acquisition costs (CAC) decreased by 8% in the enterprise tier during Q2 and Q3 due to improved organic inbound conversion from our open-source evaluation benchmarks. Payback period for enterprise deals shortened from 14.2 months to 11.8 months.
+
+Churn Analysis:
+Reasons for mid-market churn:
+1. Consolidation into existing legacy suites (42% of churned ARR)
+2. Budget reductions following macroeconomic pressures (31%)
+3. Insufficient in-house ML expertise to manage custom RAG deployments (27%)

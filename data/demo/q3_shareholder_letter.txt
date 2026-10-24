@@ -1,0 +1,17 @@
+Q3 Shareholder Letter — Enterprise Financial Update
+
+To Our Shareholders, Partners, and Customers:
+
+In Q3 2026, enterprise gross margin expanded to 72.4% while operating income reached $4.2M, reflecting a 14% revenue growth year-over-year across all digital product segments. We continued to scale our core platform while improving unit economics across enterprise tiers.
+
+Key Performance Highlights:
+- Total revenue for the third quarter rose to $31.8 million, driven by demand for our automated intelligence workflows.
+- Net dollar retention among Fortune 500 accounts stood at 118%, underscoring strong expansion within our existing base.
+- Gross margin improvement of 210 basis points year-over-year reflects enhanced cloud infrastructure efficiency and automated model routing.
+- Operating cash flow totaled $6.1M, compared to $5.2M in the prior year quarter.
+
+Product & Engineering Milestones:
+Our core evaluation and diagnostics engine entered general availability this quarter. By decoupling retriever assessment from generator evaluation, our enterprise customers reduced silent RAG failures by 64% in pilot deployments.
+
+Outlook:
+For the full fiscal year 2026, management reaffirms revenue guidance between $124 million and $128 million, representing 15% to 19% growth over fiscal 2025.

@@ -1,0 +1,9 @@
+Generate {n} diverse question-answer pairs from the text below.
+
+Include different question types: factoid, numeric, multi_hop, paraphrased, unanswerable.
+For unanswerable questions, the answer should be "This cannot be answered from the provided text."
+
+Text:
+{text}
+
+Return JSON with a "pairs" array.

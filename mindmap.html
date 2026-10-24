@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAG Doctor — Architecture Mind Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8fafc;
+  --ink: #09090b;
+  --mute: #475569;
+  --surf: #ffffff;
+  --line: #e2e8f0;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #09090b;
+    --ink: #ffffff;
+    --mute: #cbd5e1;
+    --surf: #121218;
+    --line: #27272a;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #09090b;
+  --ink: #ffffff;
+  --mute: #cbd5e1;
+  --surf: #121218;
+  --line: #27272a;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --ink: #09090b;
+  --mute: #475569;
+  --surf: #ffffff;
+  --line: #e2e8f0;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+svg { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+svg.drag { cursor: grabbing; }
+
+.link {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-opacity 0.25s, stroke-width 0.25s;
+}
+.link.hi { stroke-opacity: 1 !important; stroke-width: 3.5; filter: drop-shadow(0 0 4px currentColor); }
+
+.node { cursor: pointer; outline: none; }
+.node .box { transition: filter 0.2s, stroke-width 0.2s; }
+.node:hover .box { filter: brightness(1.12); }
+.node:focus-visible .box { stroke: var(--ink); stroke-width: 2.5; }
+.node text { pointer-events: none; }
+
+.bar {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+  z-index: 10;
+}
+.bar > * { pointer-events: auto; }
+
+h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); }
+h1 span {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mute);
+  margin-top: 3px;
+  letter-spacing: 0;
+}
+
+.btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+button {
+  font: 600 12.5px "Bricolage Grotesque", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+button:hover {
+  border-color: var(--mute);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+button:active { transform: translateY(0); }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+#info {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: min(320px, calc(100% - 28px));
+  opacity: 0;
+  z-index: 50;
+  box-shadow: 0 16px 36px rgba(0,0,0,0.28);
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--c, var(--line));
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 13px;
+  line-height: 1.48;
+  pointer-events: none;
+  transition: opacity 0.15s, border-color 0.2s, transform 0.12s ease-out;
+  backdrop-filter: blur(16px);
+}
+#info.on { opacity: 1; }
+#info b { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+#info span { color: var(--mute); display: block; }
+#info .hint {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--c, var(--mute));
+}
+
+.credit {
+  position: absolute;
+  left: 20px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+  font-size: 12px;
+  color: var(--mute);
+  pointer-events: none;
+  z-index: 10;
+}
+.credit b { color: var(--ink); font-weight: 700; }
+</style>
+</head>
+<body>
+<svg id="s" role="img" aria-label="Interactive mind map of the RAG Doctor system">
+  <g id="v">
+    <g id="gl"></g>
+    <g id="gn"></g>
+  </g>
+</svg>
+
+<div class="bar">
+  <h1>
+    RAG Doctor Mind Map
+    <span>Autonomous RAG evaluation cockpit · Click nodes to expand/collapse · Drag to pan</span>
+  </h1>
+  <div class="btns">
+    <button id="ex" title="Expand all nodes">Expand all</button>
+    <button id="co" title="Collapse to root branches">Collapse all</button>
+    <button id="rs" title="Reset dragged positions">Reset layout</button>
+    <button id="ft" title="Fit mind map to viewport">Fit view</button>
+    <button id="th" title="Toggle Dark/Light Mode">Theme ◐</button>
+  </div>
+</div>
+
+<div id="info"></div>
+<div class="credit">Track AI-04 · <b>RAG Doctor Architecture</b></div>
+
+<script>
+// Theme Sync with Parent Frame or URL query
+(function initTheme() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const qTheme = urlParams.get('theme');
+  if (qTheme === 'dark' || qTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', qTheme);
+  }
+  window.addEventListener('message', (e) => {
+    if (e.data && (e.data.theme === 'dark' || e.data.theme === 'light')) {
+      document.documentElement.setAttribute('data-theme', e.data.theme);
+    }
+  });
+})();
+
+const D=(t,n,c,k)=>({t,n,c:c||[],k});
+const B=(side,col,t,n,c)=>({t,n,c,side,col});
+
+const R={t:'RAG Doctor',n:'Autonomous RAG evaluation and diagnostic cockpit for hackathon track AI-04.',c:[
+B(-1,'#B8452F','The problem','Production RAG degrades silently, and end-to-end metrics hide why.',[
+ D('Silent degradation','Standard metrics like BLEU or ROUGE mix two different failure modes together.'),
+ D('Retriever failure','The right passage is never retrieved, so even a perfect LLM cannot ground its answer.'),
+ D('Generator hallucination','The right passage was retrieved, but the LLM invents claims or citations.'),
+ D('Weeks of wrong fixes','Teams retune embeddings when the LLM hallucinated, or rewrite prompts when retrieval missed.')]),
+B(-1,'#0F7B8A','The solution','Test the retriever and generator separately, then diagnose each query.',[
+ D('Decoupled evaluation','Retriever and generator are tested in isolation.'),
+ D('4 stress probes','Counterfactual contexts fed to the generator.'),
+ D('4 dual verdicts','Every query lands in exactly one verdict.'),
+ D('Judge certified at κ ≥ 0.85','Cohen’s Kappa against synthetic mutations.'),
+ D('Desktop app and web cockpit','pywebview window plus browser UI, with a 0.5 s replay cache.')]),
+B(-1,'#5B4BB8','Dual verdicts','The retriever state and generator state decide the diagnosis.',[
+ D('PASS','Retriever hit, generator faithful. Nominal operation.',[D('Hit + 100% grounded claims'),D('Keep regression guardrails')],'#23855A'),
+ D('RETRIEVAL_MISS','Gold chunk missing; generator could not answer.',[D('Miss + abstained'),D('Chunk size 512 → 256'),D('Raise top-k'),D('Enable BM25 hybrid search')],'#B87310'),
+ D('HALLUCINATION','Gold chunk was present, but the answer was fabricated.',[D('Hit + unfaithful'),D('temperature = 0.0'),D('Strict JSON schema'),D('Citation constraints')],'#5B4BB8'),
+ D('BOTH_FAILED','Distractors retrieved and the generator guessed.',[D('Miss + confabulated'),D('Strict abstention prompt'),D('Re-index vector database')],'#C0392B')]),
+B(-1,'#B87310','Stress probes','Four controlled contexts that isolate the generator.',[
+ D('Probe 1: Gold context','Only verified reference text, bypassing the retriever.',[D('Is the generator capable at all?')]),
+ D('Probe 2: Retrieved context','Live top-k chunks, as in production.',[D('Measures retrieval penalty P1 − P2')]),
+ D('Probe 3: Distractor injection','Two or three adversarial chunks beside the gold text.',[D('Tests attention stability')]),
+ D('Probe 4: No context','Out-of-domain query with all evidence withheld.',[D('Admits “insufficient context”, or confabulates?')])]),
+B(-1,'#2F6FBE','Workflows','How data moves through the system.',[
+ D('Ingest a document','Upload to searchable chunks.',[D('POST /api/corpora'),D('Parse PDF, TXT, MD, PPTX'),D('Chunk 512 tokens, 64 overlap'),D('Embed with BGE small'),D('Store in SQLite')]),
+ D('Run an evaluation','Real-time, streamed to the UI.',[D('POST /api/runs'),D('BM25 ranking per question'),D('Probes 1 and 2 via Gemini'),D('Extract claims, check entailment'),D('Assign verdict'),D('Stream SSE progress')]),
+ D('3-tier LLM fallback','The run keeps working when the API does not.',[D('Gemini flash'),D('Backup Gemini model'),D('Local extractive heuristic')])]),
+B(1,'#23855A','Judge calibration','Proves the LLM judge is trustworthy before its verdicts are used.',[
+ D('Synthetic mutations','Faults injected into ground truth.',[D('Entity swap'),D('Negation inversion'),D('Numeric scrambling ±20–50%'),D('Citation shuffling')]),
+ D('Cohen’s Kappa','κ = (Po − Pe) / (1 − Pe)',[D('κ ≥ 0.85: production certified'),D('0.70 to 0.85: supervised'),D('Below 0.70: uncalibrated, fallback')]),
+ D('Wilson interval','Statistical check in nyquist.py.')]),
+B(1,'#3F4E5F','Backend','FastAPI server and Python evaluation engine.',[
+ D('FastAPI app','api/main.py, routes.py, schemas.py. Serves the built SPA.'),
+ D('Ingest','parser.py for PDF, TXT, MD, PPTX; embedder.py with bge-small-en-v1.5.'),
+ D('Retrieval','BM25 plus dense hybrid pipeline in rag/pipeline.py.'),
+ D('Evaluator','evaluator/realtime.py runs probes and streams SSE.'),
+ D('Diagnosis','matrix.py classifies; repair.py prescribes the fix.'),
+ D('Scoring and validation','metrics.py, calibration.py, synthetic.py, nyquist.py.'),
+ D('Store','SQLModel on SQLite: Corpus, Chunk, Run, TestCase.'),
+ D('LLM client','Google Gemini with heuristic fallback.')]),
+B(1,'#B24A8A','Frontend','React cockpit built with Vite.',[
+ D('React 18 + Vite','TypeScript strict mode; dist/ is served by FastAPI.'),
+ D('Tailwind design system','Glassmorphic tokens in index.css.'),
+ D('Typed API client','Normalizers and the replay cache in api/client.ts.'),
+ D('Cockpit shell','app.tsx handles tab navigation.')]),
+B(1,'#7A8A1A','API','Twelve endpoints under /api.',[
+ D('Corpora','Upload, fetch, and list chunks.',[D('POST /api/corpora'),D('GET /api/corpora/{id}'),D('GET …/chunks')]),
+ D('Runs','Start and inspect evaluations.',[D('POST /api/runs'),D('GET /api/runs/{id}'),D('POST …/compare')]),
+ D('Cases','Verdicts, claims, probes, fix actions.',[D('GET /api/runs/{id}/cases'),D('GET /api/cases/{id}')]),
+ D('Events (SSE)','Live 0–100% progress stream.'),
+ D('Validation and report','Confusion matrix, κ, standalone HTML report.'),
+ D('Query sandbox','POST /api/query returns chunks, answer, and scores.')]),
+B(1,'#A3572B','Run and test','Desktop, browser, and automated checks.',[
+ D('Desktop app','run_desktop.bat or python run_desktop.py opens a 1440×900 WebView2 window.'),
+ D('Web mode','uvicorn on port 8000, Vite dev server on port 5173.'),
+ D('Test suites','All passing.',[D('23 backend tests'),D('15 frontend tests'),D('8 smoke checks')])])
+]};
+
+const NS='http://www.w3.org/2000/svg',
+      svg=document.getElementById('s'),
+      gv=document.getElementById('v'),
+      gl=document.getElementById('gl'),
+      gn=document.getElementById('gn'),
+      info=document.getElementById('info'),
+      thBtn=document.getElementById('th');
+
+const mk=(n,a,p)=>{
+  const e=document.createElementNS(NS,n);
+  for(const k in a)e.setAttribute(k,a[k]);
+  p&&p.appendChild(e);
+  return e;
+};
+
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches,
+      DUR=RM?1:700,
+      GAP=38,
+      HG=54;
+
+const all=[];
+let id=0,first=true,T0=0;
+const ctx=document.createElement('canvas').getContext('2d');
+
+function prep(n,p,d,side,col){
+  Object.assign(n,{p,d,side,col:n.k||col,open:d<=0,x:0,y:0,o:0,tx:0,ty:0,id:id++});
+  n.c=n.c||[];
+  all.push(n);
+  n.c.forEach(c=>prep(c,n,d+1,side,col));
+}
+
+R.col='#14191D';
+R.open=true;
+R.d=0;
+R.x=R.y=R.o=R.tx=R.ty=0;
+R.w=194;
+R.h=68;
+R.side=0;
+R.c.forEach(b=>prep(b,R,1,b.side,b.col));
+all.unshift(R);
+
+const mid=a=>(a[0]+a[a.length-1])/2;
+
+function build(){
+  all.forEach(n=>{
+    if(n===R){
+      n.g=mk('g',{class:'node'},gn);
+      mk('rect',{class:'box',x:-97,y:-34,width:194,height:68,rx:34,fill:'var(--ink)',stroke:'var(--line)','stroke-width':2},n.g);
+      const t=mk('text',{'text-anchor':'middle',y:-3,fill:'var(--bg)','font-size':21,'font-weight':700},n.g);
+      t.textContent='RAG Doctor';
+      const s=mk('text',{'text-anchor':'middle',y:17,fill:'var(--bg)','font-size':11.5,opacity:.85,'font-weight':500},n.g);
+      s.textContent='AI-04 evaluation cockpit';
+      n.g.style.opacity=0;
+      return;
+    }
+
+    ctx.font=(n.d===1?'700 14px':'500 13px')+' "Bricolage Grotesque",system-ui,sans-serif';
+    n.w=Math.ceil(ctx.measureText(n.t).width)+(n.d===1?36:28);
+    n.h=n.d===1?36:30;
+    n.link=mk('path',{class:'link',stroke:n.col,'stroke-width':n.d===1?2.4:1.6,'stroke-opacity':.6},gl);
+    n.g=mk('g',{class:'node',tabindex:0,role:'button','aria-label':n.t},gn);
+
+    const top=n.d===1;
+    mk('rect',{class:'box',x:-n.w/2,y:-n.h/2,width:n.w,height:n.h,rx:top?10:8,fill:top?n.col:'var(--surf)',stroke:n.col,'stroke-width':top?0:1.6},n.g);
+    const t=mk('text',{'text-anchor':'middle','dominant-baseline':'central',y:.5,'font-size':top?14:13,'font-weight':top?700:500,fill:top?'#ffffff':'var(--ink)'},n.g);
+    t.textContent=n.t;
+
+    if(n.c.length){
+      const bx=n.side*(n.w/2+13);
+      const b=mk('g',{transform:`translate(${bx},0)`},n.g);
+      mk('circle',{r:9,fill:'var(--bg)',stroke:n.col,'stroke-width':1.6},b);
+      n.bt=mk('text',{'text-anchor':'middle','dominant-baseline':'central',y:.5,'font-size':10.5,'font-weight':700,fill:n.col},b);
+    }
+
+    n.g.addEventListener('click',()=>{
+      if(moved>4)return;
+      n.open=!n.open;
+      layout(false);
+    });
+    n.g.addEventListener('pointerdown',e=>{
+      e.stopPropagation();
+      dragNode=n;
+      drag={x:e.clientX,y:e.clientY};
+      moved=0;
+      svg.classList.add('drag');
+    });
+    n.g.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        n.open=!n.open;
+        layout(false);
+      }
+    });
+  });
+
+  all.forEach(n=>{
+    const f=()=>{
+      if(dragNode)return;
+      info.style.setProperty('--c',n.col);
+      info.innerHTML='<b></b><span></span><div class="hint"></div>';
+      info.children[0].textContent=n.t;
+      info.children[1].textContent=n.n||'Architectural component operating under nominal parameters.';
+      info.children[2].textContent=n.c.length 
+        ? `${n.c.length} nested elements · Click to ${n.open?'collapse':'expand'}` 
+        : 'Terminal specification node';
+      place(n);
+      info.classList.add('on');
+      for(let a=n;a&&a.link;a=a.p)a.link.classList.add('hi');
+    };
+    const u=()=>{
+      info.classList.remove('on');
+      all.forEach(a=>a.link&&a.link.classList.remove('hi'));
+    };
+    n.g.addEventListener('pointerenter',f);
+    n.g.addEventListener('pointerleave',u);
+    n.g.addEventListener('focus',f);
+    n.g.addEventListener('blur',u);
+  });
+}
+
+function layout(f){
+  const vis=new Set([R]);
+  for(const s of [1,-1]){
+    const side=[],cw=[];
+    let y=0;
+    const walk=n=>{
+      vis.add(n);
+      side.push(n);
+      cw[n.d]=Math.max(cw[n.d]||0,n.w);
+      if(n.open&&n.c.length){
+        n.c.forEach(walk);
+        n.ty=mid(n.c.map(c=>c.ty));
+      } else {
+        n.ty=y;
+        y+=GAP;
+      }
+    };
+    R.c.filter(b=>b.side===s).forEach(walk);
+    const xs=[];
+    let x=R.w/2+HG;
+    for(let d=1;d<cw.length;d++){
+      xs[d]=x;
+      x+=cw[d]+HG;
+    }
+    const sh=(y-GAP)/2;
+    side.forEach(n=>{
+      n.ty-=sh;
+      n.tx=s*(xs[n.d]+n.w/2);
+    });
+    side.forEach(n=>{
+      let a=n;
+      while(a&&a!==R){
+        n.tx+=a.dx||0;
+        n.ty+=a.dy||0;
+        a=a.p;
+      }
+    });
+  }
+
+  all.forEach(n=>{
+    if(n===R)return;
+    if(!vis.has(n)&&n.p){
+      n.tx=n.p.tx;
+      n.ty=n.p.ty;
+    }
+  });
+
+  all.forEach(n=>{
+    n.sx=n.x;
+    n.sy=n.y;
+    n.so=n.o;
+    n.to=vis.has(n)?1:0;
+    n.dl=first?n.d*140:0;
+    if(n.bt)n.bt.textContent=n.open?'–':n.c.length;
+  });
+
+  first=false;
+  T0=performance.now();
+  if(f!==false)fit();
+  kick();
+}
+
+let vw={x:0,y:0,k:1},vt={x:0,y:0,k:1},busy=false,moved=0;
+
+function fit(){
+  let a=1e9,b=-1e9,c=1e9,d=-1e9;
+  all.forEach(n=>{
+    if(!n.to)return;
+    a=Math.min(a,n.tx-n.w/2-24);
+    b=Math.max(b,n.tx+n.w/2+24);
+    c=Math.min(c,n.ty-n.h/2);
+    d=Math.max(d,n.ty+n.h/2);
+  });
+  const W=innerWidth,H=innerHeight;
+  const k=Math.min(W/(b-a),(H-160)/(d-c),1.35);
+  vt={k,x:W/2-(a+b)/2*k,y:H/2-(c+d)/2*k+12};
+  kick();
+}
+
+function kick(){
+  if(!busy){
+    busy=true;
+    requestAnimationFrame(frame);
+  }
+}
+
+function frame(now){
+  let go=false;
+  all.forEach(n=>{
+    const t=Math.min(1,Math.max(0,(now-T0-n.dl)/DUR)),e=1-Math.pow(1-t,3);
+    n.x=n.sx+(n.tx-n.sx)*e;
+    n.y=n.sy+(n.ty-n.sy)*e;
+    n.o=n.so+(n.to-n.so)*e;
+    if(t<1)go=true;
+  });
+  const l=RM?1:0.16;
+  ['x','y','k'].forEach(p=>{
+    vw[p]+=(vt[p]-vw[p])*l;
+    if(Math.abs(vt[p]-vw[p])>(p==='k'?.001:.3))go=true;
+    else vw[p]=vt[p];
+  });
+  render();
+  busy=go;
+  if(go)requestAnimationFrame(frame);
+}
+
+function render(){
+  gv.setAttribute('transform',`translate(${vw.x},${vw.y}) scale(${vw.k})`);
+  all.forEach(n=>{
+    n.g.setAttribute('transform',`translate(${n.x},${n.y})`);
+    n.g.style.opacity=n.o;
+    n.g.style.pointerEvents=n.to?'auto':'none';
+    if(n.link){
+      const p=n.p;
+      const x1=p.x+n.side*p.w/2;
+      const x2=n.x-n.side*n.w/2;
+      const m=(x1+x2)/2;
+      n.link.setAttribute('d',`M${x1},${p.y}C${m},${p.y} ${m},${n.y} ${x2},${n.y}`);
+      n.link.style.opacity=n.o;
+      n.tabIndex=n.to?0:-1;
+      n.g.setAttribute('tabindex',n.to?0:-1);
+    }
+  });
+}
+
+function shift(n,dx,dy){
+  n.x+=dx;n.tx+=dx;n.sx+=dx;n.y+=dy;n.ty+=dy;n.sy+=dy;
+  n.c.forEach(c=>shift(c,dx,dy));
+}
+
+function place(n){
+  const r=n.g.getBoundingClientRect(),w=info.offsetWidth,h=info.offsetHeight;
+  let x=r.right+14,y=r.top+r.height/2-h/2;
+  if(x+w>innerWidth-14)x=r.left-w-14;
+  x=Math.max(14,x);
+  y=Math.min(innerHeight-h-50,Math.max(74,y));
+  info.style.transform=`translate(${x}px,${y}px)`;
+}
+
+let drag=null,dragNode=null;
+svg.addEventListener('pointerdown',e=>{
+  drag={x:e.clientX,y:e.clientY};
+  moved=0;
+  svg.classList.add('drag');
+});
+
+addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  drag={x:e.clientX,y:e.clientY};
+  moved+=Math.abs(dx)+Math.abs(dy);
+  if(dragNode){
+    if(moved>4){
+      info.classList.remove('on');
+      shift(dragNode,dx/vw.k,dy/vw.k);
+      dragNode.dx=(dragNode.dx||0)+dx/vw.k;
+      dragNode.dy=(dragNode.dy||0)+dy/vw.k;
+      render();
+    }
+    return;
+  }
+  vt.x+=dx;vt.y+=dy;vw.x=vt.x;vw.y=vt.y;
+  render();
+});
+
+addEventListener('pointerup',()=>{
+  drag=null;
+  dragNode=null;
+  svg.classList.remove('drag');
+  setTimeout(()=>moved=0,0);
+});
+
+svg.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const nk=Math.min(2.5,Math.max(0.25,vt.k*Math.exp(-e.deltaY*0.0015))),r=nk/vt.k;
+  vt.x=e.clientX-(e.clientX-vt.x)*r;
+  vt.y=e.clientY-(e.clientY-vt.y)*r;
+  vt.k=nk;
+  vw={...vt};
+  render();
+},{passive:false});
+
+addEventListener('resize',fit);
+
+document.getElementById('ex').onclick=()=>{
+  all.forEach(n=>n.open=true);
+  layout();
+};
+document.getElementById('co').onclick=()=>{
+  all.forEach(n=>n.open=n.d===0);
+  layout();
+};
+document.getElementById('ft').onclick=fit;
+document.getElementById('rs').onclick=()=>{
+  all.forEach(n=>{n.dx=0;n.dy=0});
+  layout();
+};
+
+if(thBtn){
+  thBtn.onclick=()=>{
+    const cur=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+    const next=cur==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+  };
+}
+
+function start(){
+  build();
+  layout();
+}
+
+let started=false;
+const go=()=>{if(!started){started=true;start();}};
+Promise.race([
+  document.fonts.load('700 14px "Bricolage Grotesque"'),
+  new Promise(r=>setTimeout(r,1000))
+]).then(go,go);
+</script>
+</body>
+</html>

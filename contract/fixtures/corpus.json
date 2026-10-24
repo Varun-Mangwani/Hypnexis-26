@@ -1,0 +1,7 @@
+{
+  "corpus_id": "corp_demo_001",
+  "filename": "demo_document.pdf",
+  "chunk_count": 42,
+  "created_at": "2026-10-24T09:00:00Z",
+  "file_hash": "abc123def456"
+}

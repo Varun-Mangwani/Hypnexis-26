@@ -1,0 +1,8 @@
+Answer the question using only the information in the context below.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:

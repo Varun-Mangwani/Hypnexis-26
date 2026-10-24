@@ -1,0 +1,27 @@
+Q3 Financial Tables & Statements
+
+Condensed Consolidated Statements of Operations (Unaudited):
+Three Months Ended September 30, 2026 and 2025 (in thousands, except per share data):
+
+Revenues:
+- Subscription Services: $27,450 (Q3 2026) vs $23,980 (Q3 2025)
+- Professional Services: $4,350 (Q3 2026) vs $3,920 (Q3 2025)
+- Total Revenues: $31,800 (Q3 2026) vs $27,900 (Q3 2025)
+
+Cost of Revenues:
+- Subscription Services: $6,920
+- Professional Services: $1,850
+- Total Cost of Revenues: $8,770
+Gross Profit: $23,030 (Gross Margin: 72.4%)
+
+Operating Expenses:
+- Research and Development: $8,450
+- Sales and Marketing: $6,880
+- General and Administrative: $3,500
+Total Operating Expenses: $18,830
+
+Operating Income: $4,200
+Net Income: $3,650
+
+Cash Flow & Capital Allocation:
+Operating cash flow totaled $6.1M compared to $5.2M in the prior year quarter. Capital expenditures were $1.1M, primarily focused on low-latency inference clusters and GPU evaluation hardware. Free cash flow for Q3 reached $5.0M.

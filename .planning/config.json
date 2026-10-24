@@ -1,0 +1,11 @@
+{
+  "project": "RAGDoctor",
+  "phase": "P0",
+  "workflow": {
+    "auto_commit": true,
+    "require_tests": true,
+    "mock_first": true
+  },
+  "current_phase": 0,
+  "phases_complete": []
+}

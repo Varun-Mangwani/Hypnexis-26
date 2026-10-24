@@ -1,0 +1,17 @@
+.env
+*.db
+data/runs/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+*.egg-info/
+.venv/
+.uv/
+*.model
+*.bin
+*.pt
+sentence_transformers_cache/
